@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 
-Route::get('/', function () {
-    return view('welcome');
-});
+// SPA catch-all route - serves the Vue app for all frontend routes
+Route::get('/{any?}', function () {
+    return view('app');
+})->where('any', '^(?!api).*$');
