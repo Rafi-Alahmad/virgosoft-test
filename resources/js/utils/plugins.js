@@ -1,0 +1,17 @@
+/**
+ * This is helper function to register plugins like a nuxt
+ * To register a plugin just export a const function `defineVuePlugin` that takes `app` as argument and call `app.use`
+ * For Scanning plugins it will include all files in `src/plugins` and `src/plugins/**\/index.js`
+ */
+export const registerPlugins = (app) => {
+  const imports = import.meta.glob(['../plugins/*.{ts,js}', '../plugins/*/index.{ts,js}'], {
+    eager: true
+  })
+  const importPaths = Object.keys(imports).sort()
+
+  importPaths.forEach((path) => {
+    const pluginImportModule = imports[path]
+
+    pluginImportModule.default?.(app)
+  })
+}
