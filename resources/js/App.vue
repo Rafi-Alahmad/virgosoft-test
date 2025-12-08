@@ -1,9 +1,6 @@
 <template>
-    <div class="min-h-screen bg-slate-950 text-white">
-        Hello World
-    </div>
+    <RouterView />
 </template>
 
 <script setup>
-import { RouterView } from 'vue-router';
 </script>
