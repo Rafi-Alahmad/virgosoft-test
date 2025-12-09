@@ -112,5 +112,45 @@ class OrderServiceTest extends TestCase
         $this->assertEquals('0.00000000', number_format($sellerAsset->locked_amount, 8, '.', ''));
         $this->assertEquals('0.00000000', number_format($sellerAsset->amount, 8, '.', ''));
     }
-}
 
+    public function test_match_broadcasts_order_matched_event(): void
+    {
+        Event::fake([\App\Events\OrderMatchedEvent::class]);
+
+        $seller = User::factory()->create();
+        $buyer = User::factory()->create(['balance' => 200]);
+
+        Asset::factory()->for($seller)->create([
+            'symbol' => 'BTC',
+            'amount' => 1,
+            'locked_amount' => 0,
+        ]);
+
+        $sellOrder = $this->service->place($seller, [
+            'symbol' => 'BTC',
+            'side' => 'sell',
+            'price' => 100,
+            'amount' => 1,
+        ]);
+
+        Event::assertNotDispatched(\App\Events\OrderMatchedEvent::class);
+
+        $buyOrder = $this->service->place($buyer, [
+            'symbol' => 'BTC',
+            'side' => 'buy',
+            'price' => 110,
+            'amount' => 1,
+        ]);
+
+
+        Event::assertDispatched(\App\Events\OrderMatchedEvent::class, function ($event) use ($buyer, $seller) {
+            $channels = collect($event->broadcastOn())->map(fn($ch) => method_exists($ch, 'name') ? $ch->name() : $ch->name);
+
+            return $channels->contains("private-user.{$buyer->id}")
+                && $channels->contains("private-user.{$seller->id}")
+                && bccomp($event->amount, 1, 8) === 0
+                && $event->buyOrder->symbol === 'BTC'
+                && $event->sellOrder->symbol === 'BTC';
+        });
+    }
+}

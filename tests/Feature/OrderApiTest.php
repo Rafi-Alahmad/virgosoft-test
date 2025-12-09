@@ -5,7 +5,9 @@ namespace Tests\Feature;
 use App\Models\Asset;
 use App\Models\Order;
 use App\Models\User;
+use App\Events\OrderMatchedEvent;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Event;
 use Laravel\Sanctum\Sanctum;
 use Tests\TestCase;
 
@@ -158,5 +160,45 @@ class OrderApiTest extends TestCase
         $this->assertEquals('0.00000000', number_format($sellerAsset->locked_amount, 8, '.', ''));
         $this->assertEquals('0.00000000', number_format($sellerAsset->amount, 8, '.', ''));
     }
-}
 
+    public function test_matching_broadcasts_order_matched_event(): void
+    {
+        Event::fake([OrderMatchedEvent::class]);
+
+        $seller = User::factory()->create();
+        $buyer = User::factory()->create(['balance' => 200]);
+
+        Asset::factory()->for($seller)->create([
+            'symbol' => 'BTC',
+            'amount' => 1,
+            'locked_amount' => 0,
+        ]);
+
+        Sanctum::actingAs($seller);
+        $sellResponse = $this->postJson('/api/orders', [
+            'symbol' => 'BTC',
+            'side' => 'sell',
+            'price' => 100,
+            'amount' => 1,
+        ]);
+        $sellResponse->assertStatus(201);
+
+        Sanctum::actingAs($buyer);
+        $buyResponse = $this->postJson('/api/orders', [
+            'symbol' => 'BTC',
+            'side' => 'buy',
+            'price' => 110,
+            'amount' => 1,
+        ]);
+        $buyResponse->assertStatus(201);
+
+        Event::assertDispatched(OrderMatchedEvent::class, function ($event) use ($buyer, $seller) {
+            $channels = collect($event->broadcastOn())->map(fn($ch) => method_exists($ch, 'name') ? $ch->name() : $ch->name);
+            return $channels->contains("private-user.{$buyer->id}")
+                && $channels->contains("private-user.{$seller->id}")
+                && bccomp($event->amount, 1, 8) === 0
+                && $event->buyOrder->symbol === 'BTC'
+                && $event->sellOrder->symbol === 'BTC';;
+        });
+    }
+}

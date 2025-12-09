@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Events\OrderMatchedEvent;
 use App\Events\OrderPlacedEvent;
 use App\Models\Asset;
 use App\Models\Order;
@@ -88,7 +89,7 @@ class OrderService
             ]);
         }
 
-        return DB::transaction(function () use ($order, $counter) {
+        $result = DB::transaction(function () use ($order, $counter) {
             $amount = $order->amount;
 
             // use the price of the order that is being matched
@@ -98,22 +99,42 @@ class OrderService
 
             if ($order->side === 'buy') {
                 // buyer is $order, seller is $counter
-                $this->applySellSettlement($counter, $volume, $fee);
-                $this->applyBuySettlement($order, $amount, $counter->symbol);
+                $buyOrder = $order;
+                $sellOrder = $counter;
             } else {
                 // seller is $order, buyer is $counter
-                $this->applySellSettlement($order, $volume, $fee);
-                $this->applyBuySettlement($counter, $amount, $order->symbol);
+                $buyOrder = $counter;
+                $sellOrder = $order;
             }
 
-            $order->status = Order::STATUS_FILLED;
-            $order->save();
+            // buyer is $buyOrder, seller is $sellOrder
+            $this->applySellSettlement($sellOrder, $volume, $fee);
+            $this->applyBuySettlement($buyOrder, $amount, $sellOrder->symbol);
 
-            $counter->status = Order::STATUS_FILLED;
-            $counter->save();
+            $buyOrder->status = Order::STATUS_FILLED;
+            $buyOrder->save();
 
-            return $order->fresh();
+            $sellOrder->status = Order::STATUS_FILLED;
+            $sellOrder->save();
+
+            return [
+                'buy' => $buyOrder->fresh(),
+                'sell' => $sellOrder->fresh(),
+                'price' => $price,
+                'amount' => $amount,
+                'fee' => $fee,
+            ];
         });
+
+        OrderMatchedEvent::dispatch(
+            $result['buy'],
+            $result['sell'],
+            $result['price'],
+            $result['amount'],
+            $result['fee']
+        );
+
+        return $order->fresh();
     }
 
     protected function findCounterOrder(Order $order): ?Order
