@@ -15,6 +15,7 @@ declare global {
   const defineAsyncComponent: typeof import('vue').defineAsyncComponent
   const defineComponent: typeof import('vue').defineComponent
   const defineStore: typeof import('pinia').defineStore
+  const echo: typeof import('./resources/js/utils/echo.js').echo
   const effectScope: typeof import('vue').effectScope
   const formatAmount: typeof import('./resources/js/utils/numbers.js').formatAmount
   const formatPrice: typeof import('./resources/js/utils/numbers.js').formatPrice
@@ -111,6 +112,7 @@ declare module 'vue' {
     readonly defineAsyncComponent: UnwrapRef<typeof import('vue')['defineAsyncComponent']>
     readonly defineComponent: UnwrapRef<typeof import('vue')['defineComponent']>
     readonly defineStore: UnwrapRef<typeof import('pinia')['defineStore']>
+    readonly echo: UnwrapRef<typeof import('./resources/js/utils/echo.js')['echo']>
     readonly effectScope: UnwrapRef<typeof import('vue')['effectScope']>
     readonly formatAmount: UnwrapRef<typeof import('./resources/js/utils/numbers.js')['formatAmount']>
     readonly formatPrice: UnwrapRef<typeof import('./resources/js/utils/numbers.js')['formatPrice']>

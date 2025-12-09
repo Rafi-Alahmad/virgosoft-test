@@ -26,6 +26,7 @@
     "defineAsyncComponent": true,
     "defineComponent": true,
     "defineStore": true,
+    "echo": true,
     "effectScope": true,
     "formatAmount": true,
     "formatPrice": true,
