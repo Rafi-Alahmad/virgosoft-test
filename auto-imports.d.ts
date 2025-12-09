@@ -16,6 +16,8 @@ declare global {
   const defineComponent: typeof import('vue').defineComponent
   const defineStore: typeof import('pinia').defineStore
   const effectScope: typeof import('vue').effectScope
+  const formatAmount: typeof import('./resources/js/utils/numbers.js').formatAmount
+  const formatPrice: typeof import('./resources/js/utils/numbers.js').formatPrice
   const getActivePinia: typeof import('pinia').getActivePinia
   const getCurrentInstance: typeof import('vue').getCurrentInstance
   const getCurrentScope: typeof import('vue').getCurrentScope
@@ -110,6 +112,8 @@ declare module 'vue' {
     readonly defineComponent: UnwrapRef<typeof import('vue')['defineComponent']>
     readonly defineStore: UnwrapRef<typeof import('pinia')['defineStore']>
     readonly effectScope: UnwrapRef<typeof import('vue')['effectScope']>
+    readonly formatAmount: UnwrapRef<typeof import('./resources/js/utils/numbers.js')['formatAmount']>
+    readonly formatPrice: UnwrapRef<typeof import('./resources/js/utils/numbers.js')['formatPrice']>
     readonly getActivePinia: UnwrapRef<typeof import('pinia')['getActivePinia']>
     readonly getCurrentInstance: UnwrapRef<typeof import('vue')['getCurrentInstance']>
     readonly getCurrentScope: UnwrapRef<typeof import('vue')['getCurrentScope']>

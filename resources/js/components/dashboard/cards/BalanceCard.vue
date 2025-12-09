@@ -12,11 +12,7 @@ const props = defineProps({
 const formattedBalance = computed(() => {
     const balance = parseFloat(props.balance) || 0;
     return (
-        '$' +
-        balance.toLocaleString('en-US', {
-            minimumFractionDigits: 2,
-            maximumFractionDigits: 2,
-        })
+        '$' + formatPrice(balance)
     );
 });
 </script>

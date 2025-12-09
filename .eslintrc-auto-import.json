@@ -27,6 +27,8 @@
     "defineComponent": true,
     "defineStore": true,
     "effectScope": true,
+    "formatAmount": true,
+    "formatPrice": true,
     "getActivePinia": true,
     "getCurrentInstance": true,
     "getCurrentScope": true,

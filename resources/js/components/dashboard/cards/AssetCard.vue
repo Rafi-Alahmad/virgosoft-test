@@ -23,14 +23,6 @@ const availableAmount = computed(() => {
     return total - locked;
 });
 
-const formattedAmount = computed(() => {
-    const amount = parseFloat(availableAmount.value) || 0;
-    return amount.toLocaleString('en-US', {
-        minimumFractionDigits: 8,
-        maximumFractionDigits: 8,
-    });
-});
-
 const colorMap = computed(() => {
     const colors = ['emerald', 'violet', 'amber', 'cyan', 'rose'];
     const index = props.symbol.charCodeAt(0) % colors.length;
@@ -40,7 +32,7 @@ const colorMap = computed(() => {
 
 <template>
     <StatCard
-        :value="formattedAmount"
+        :value="formatAmount(availableAmount)"
         :label="`${symbol} Available`"
         :badge="symbol"
         :color="colorMap"

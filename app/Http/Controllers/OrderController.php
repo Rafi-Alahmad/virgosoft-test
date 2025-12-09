@@ -14,7 +14,7 @@ class OrderController extends Controller
         private OrderService $orders,
     ) {}
 
-    public function index(Request $request)
+    public function listOpen(Request $request)
     {
         $validated = $request->validate([
             'symbol' => ['sometimes', 'string', 'max:10'],
@@ -24,6 +24,15 @@ class OrderController extends Controller
             $this->orders->listOpen(
                 $validated['symbol'] ?? null,
                 $request->integer('per_page', 10)
+            )
+        );
+    }
+
+    public function index(Request $request)
+    {
+        return OrderResource::collection(
+            $this->orders->listOrders(
+                $request->integer('per_page', 50)
             )
         );
     }

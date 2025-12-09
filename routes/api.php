@@ -27,6 +27,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/logout', [AuthController::class, 'logout']);
 
     Route::get('/orders', [OrderController::class, 'index']);
+    Route::get('/orders/open', [OrderController::class, 'listOpen']);
     Route::post('/orders', [OrderController::class, 'store']);
     Route::post('/orders/{order}/cancel', [OrderController::class, 'cancel']);
     Route::post('/orders/{order}/match', [OrderController::class, 'match']);

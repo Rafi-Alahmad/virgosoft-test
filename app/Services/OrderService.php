@@ -22,6 +22,13 @@ class OrderService
             ->paginate($perPage);
     }
 
+    public function listOrders(int $perPage = 50): LengthAwarePaginator
+    {
+        return Order::query()
+            ->orderBy('created_at', 'desc')
+            ->paginate($perPage);
+    }
+
     public function place(User $user, array $data): Order
     {
         return DB::transaction(function () use ($user, $data) {
