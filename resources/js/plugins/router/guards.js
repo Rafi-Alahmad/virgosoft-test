@@ -1,4 +1,4 @@
-import { useAuthStore } from '@/stores/auth';
+import { useAuthStore } from "@/stores/auth";
 
 export const setupGuards = (router) => {
     router.beforeEach(async (to, from, next) => {
@@ -8,7 +8,7 @@ export const setupGuards = (router) => {
         if (to.meta.requiresAuth) {
             await authStore.checkAuth();
             if (!authStore.isAuthenticated) {
-                return next("/login");
+                return next({ name: "login" });
             }
         }
 
@@ -16,7 +16,7 @@ export const setupGuards = (router) => {
         if (to.meta.guest) {
             await authStore.checkAuth();
             if (authStore.isAuthenticated) {
-                return next("/dashboard");
+                return next({ name: "dashboard" });
             }
         }
 

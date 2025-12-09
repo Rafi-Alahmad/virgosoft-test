@@ -22,12 +22,14 @@ declare module 'vue' {
     BalanceCard: typeof import('./resources/js/components/dashboard/cards/BalanceCard.vue')['default']
     Default: typeof import('./resources/js/layouts/default.vue')['default']
     Orderbook: typeof import('./resources/js/components/dashboard/Orderbook.vue')['default']
+    OrderForm: typeof import('./resources/js/components/forms/OrderForm.vue')['default']
+    OrderForrm: typeof import('./resources/js/components/forms/OrderForrm.vue')['default']
     OrderookTitle: typeof import('./resources/js/components/dashboard/OrderookTitle.vue')['default']
     OrdersList: typeof import('./resources/js/components/dashboard/OrdersList.vue')['default']
     ProfileField: typeof import('./resources/js/components/ProfileField.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
     StatCard: typeof import('./resources/js/components/ui/StatCard.vue')['default']
-    WelcomeHeader: typeof import('./resources/js/components/dashboars/WelcomeHeader.vue')['default']
+    WelcomeHeader: typeof import('./resources/js/components/dashboard/WelcomeHeader.vue')['default']
   }
 }

@@ -75,6 +75,12 @@ onMounted(() => {
                     </option>
                 </select>
             </div>
+            <router-link
+                :to="{name: 'order-form'}"
+                class="ml-auto px-4 py-2 rounded-lg bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 hover:bg-emerald-500/20 transition-colors text-sm font-medium"
+            >
+                New Order
+            </router-link>
         </template>
         <template #icon>
             <svg
@@ -122,9 +128,17 @@ onMounted(() => {
                         </span>
 
                         <div >
-                            <a href="#" class="px-2 py-1 rounded text-xs font-medium bg-emerald-500/10 text-emerald-400">
+                            <router-link :to="{
+                                name: 'order-form',
+                                query: {
+                                    symbol: order.symbol,
+                                    side: order.side == 'buy' ? 'sell' : 'buy',
+                                    price: order.price,
+                                    amount: order.amount,
+                                },
+                            }" class="px-2 py-1 rounded text-xs font-medium bg-emerald-500/10 text-emerald-400">
                                 Create Match
-                            </a>
+                            </router-link>
                         </div>
                     </div>
                 </div>

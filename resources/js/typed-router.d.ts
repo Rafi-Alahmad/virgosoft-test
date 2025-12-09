@@ -37,6 +37,13 @@ declare module 'vue-router/auto-routes' {
       { 404: ParamValue<false> },
       | never
     >,
+    'order-form': RouteRecordInfo<
+      'order-form',
+      '/limit-order',
+      Record<never, never>,
+      Record<never, never>,
+      | never
+    >,
     'login': RouteRecordInfo<
       'login',
       '/login',
@@ -73,6 +80,12 @@ declare module 'vue-router/auto-routes' {
     'resources/js/pages/errors/[...404].vue': {
       routes:
         | '/errors/[...404]'
+      views:
+        | never
+    }
+    'resources/js/pages/limit-order.vue': {
+      routes:
+        | 'order-form'
       views:
         | never
     }

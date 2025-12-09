@@ -16,7 +16,7 @@ const { get } = useApi();
 const balance = ref(0);
 const assets = ref([]);
 const loading = ref(true);
-const selectedSymbol = ref('BTC');
+const selectedSymbol = ref("BTC");
 
 const fetchProfile = async () => {
     loading.value = true;
@@ -27,7 +27,10 @@ const fetchProfile = async () => {
         assets.value = data.data.assets || [];
 
         // Set default symbol from first asset if available
-        if (assets.value.length > 0 && !assets.value.find(a => a.symbol === selectedSymbol.value)) {
+        if (
+            assets.value.length > 0 &&
+            !assets.value.find((a) => a.symbol === selectedSymbol.value)
+        ) {
             selectedSymbol.value = assets.value[0].symbol;
         }
     }
@@ -41,7 +44,7 @@ onMounted(() => {
 </script>
 
 <template>
-    <WelcomeHeader :name="authStore.user?.name" />
+    <WelcomeHeader :name="authStore.user?.name" v-if="authStore.user" />
 
     <!-- Stats Grid -->
     <div
@@ -76,12 +79,12 @@ onMounted(() => {
 
     <!-- Orders and Orderbook Section -->
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <!-- My Orders -->
-        <OrdersList />
-
+        <!-- Orders List -->
+        <div class="space-y-4">
+            <OrdersList />
+        </div>
         <!-- Orderbook -->
         <div class="space-y-4">
-
             <Orderbook :symbol="selectedSymbol" :assets="assets" />
         </div>
     </div>
