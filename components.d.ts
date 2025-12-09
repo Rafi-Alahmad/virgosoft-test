@@ -12,17 +12,19 @@ export {}
 declare module 'vue' {
   export interface GlobalComponents {
     404: typeof import('./resources/js/components/errors/404.vue')['default']
-    AlertBox: typeof import('./resources/js/components/ui/AlertBox.vue')['default']
     AppButton: typeof import('./resources/js/components/ui/AppButton.vue')['default']
     AppCard: typeof import('./resources/js/components/ui/AppCard.vue')['default']
     AppInput: typeof import('./resources/js/components/ui/AppInput.vue')['default']
     AppNavbar: typeof import('./resources/js/components/layouts/AppNavbar.vue')['default']
+    AssetCard: typeof import('./resources/js/components/dashboard/cards/AssetCard.vue')['default']
     Auth: typeof import('./resources/js/layouts/auth.vue')['default']
     AuthLayout: typeof import('./resources/js/components/layouts/AuthLayout.vue')['default']
+    BalanceCard: typeof import('./resources/js/components/dashboard/cards/BalanceCard.vue')['default']
     Default: typeof import('./resources/js/layouts/default.vue')['default']
     ProfileField: typeof import('./resources/js/components/ProfileField.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
     StatCard: typeof import('./resources/js/components/ui/StatCard.vue')['default']
+    WelcomeHeader: typeof import('./resources/js/components/dashboars/WelcomeHeader.vue')['default']
   }
 }
