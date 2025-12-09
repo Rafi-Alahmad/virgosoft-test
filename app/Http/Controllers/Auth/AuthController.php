@@ -50,7 +50,7 @@ class AuthController extends Controller
         $user = Auth::user();
 
         // Revoke all previous tokens for single device login
-        $user->tokens()->delete();
+        // $user->tokens()->delete();
 
         $token = $user->createToken('auth-token')->plainTextToken;
 

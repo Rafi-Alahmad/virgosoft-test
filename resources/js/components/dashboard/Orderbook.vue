@@ -1,5 +1,5 @@
 <script setup>
-import { ref, computed, watch, onMounted } from "vue";
+import { ref, computed, watch, onMounted, onUnmounted } from "vue";
 import { useApi } from "@/composables/useApi";
 import AppCard from "@/components/ui/AppCard.vue";
 
@@ -15,7 +15,7 @@ const props = defineProps({
 });
 
 const { get } = useApi();
-
+const authStore = useAuthStore();
 const ordersData = ref([]);
 const loading = ref(true);
 
@@ -47,8 +47,16 @@ watch(
 
 onMounted(() => {
     fetchOrderbook();
+
+    echo.private(`user.${authStore.user?.id}`)
+    .listen(".order-matched", (e) => {
+        fetchOrderbook();
+    });
 });
 
+onUnmounted(() => {
+    echo.leave(`user.${authStore.user?.id}`);
+});
 </script>
 
 <template>

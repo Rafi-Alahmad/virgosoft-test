@@ -1,27 +1,27 @@
 <script setup>
-import { ref, onMounted } from 'vue';
-import { useApi } from '@/composables/useApi';
-import AppCard from '@/components/ui/AppCard.vue';
+import { ref, onMounted, onUnmounted } from "vue";
+import { useApi } from "@/composables/useApi";
+import AppCard from "@/components/ui/AppCard.vue";
 
 const { get } = useApi();
-
+const authStore = useAuthStore();
 const orders = ref([]);
 const loading = ref(true);
 
 const statusLabels = {
-    1: { text: 'Open', color: 'text-blue-400 bg-blue-500/10' },
-    2: { text: 'Filled', color: 'text-emerald-400 bg-emerald-500/10' },
-    3: { text: 'Cancelled', color: 'text-slate-400 bg-slate-500/10' },
+    1: { text: "Open", color: "text-blue-400 bg-blue-500/10" },
+    2: { text: "Filled", color: "text-emerald-400 bg-emerald-500/10" },
+    3: { text: "Cancelled", color: "text-slate-400 bg-slate-500/10" },
 };
 
 const sideLabels = {
-    buy: { text: 'Buy', color: 'text-emerald-400' },
-    sell: { text: 'Sell', color: 'text-rose-400' },
+    buy: { text: "Buy", color: "text-emerald-400" },
+    sell: { text: "Sell", color: "text-rose-400" },
 };
 
 const fetchOrders = async () => {
     loading.value = true;
-    const { data, error } = await get('/orders?per_page=50');
+    const { data, error } = await get("/orders?per_page=50");
 
     if (data && !error) {
         orders.value = data.data || [];
@@ -30,8 +30,17 @@ const fetchOrders = async () => {
     loading.value = false;
 };
 
-onMounted(() => {
+onMounted(async () => {
     fetchOrders();
+
+    echo.private(`user.${authStore.user.id}`)
+    .listen(".order-matched", (e) => {
+        fetchOrders();
+    });
+});
+
+onUnmounted(() => {
+    echo.leave(`user.${authStore.user.id}`);
 });
 </script>
 
@@ -93,19 +102,24 @@ onMounted(() => {
                 <div class="grid grid-cols-3 gap-4 text-sm">
                     <div>
                         <p class="text-slate-500 text-xs mb-1">Price</p>
-                        <p class="text-white font-medium">${{ formatPrice(order.price) }}</p>
+                        <p class="text-white font-medium">
+                            ${{ formatPrice(order.price) }}
+                        </p>
                     </div>
                     <div>
                         <p class="text-slate-500 text-xs mb-1">Amount</p>
-                        <p class="text-white font-medium">{{ formatAmount(order.amount) }}</p>
+                        <p class="text-white font-medium">
+                            {{ formatAmount(order.amount) }}
+                        </p>
                     </div>
                     <div>
                         <p class="text-slate-500 text-xs mb-1">Date</p>
-                        <p class="text-white font-medium text-xs">{{ order.created_at }}</p>
+                        <p class="text-white font-medium text-xs">
+                            {{ order.created_at }}
+                        </p>
                     </div>
                 </div>
             </div>
         </div>
     </AppCard>
 </template>
-

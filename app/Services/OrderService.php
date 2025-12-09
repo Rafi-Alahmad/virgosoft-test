@@ -133,7 +133,7 @@ class OrderService
             ];
         });
 
-        OrderMatchedEvent::dispatch(
+        \App\Events\OrderMatchedEvent::dispatch(
             $result['buy'],
             $result['sell'],
             $result['price'],

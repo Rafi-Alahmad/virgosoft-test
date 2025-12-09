@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onMounted } from "vue";
+import { ref, onMounted, onUnmounted } from "vue";
 import { useAuthStore } from "@/stores/auth";
 import { useApi } from "@/composables/useApi";
 
@@ -40,6 +40,14 @@ const fetchProfile = async () => {
 
 onMounted(() => {
     fetchProfile();
+
+    echo.private(`user.${authStore.user?.id}`).listen(".order-matched", (e) => {
+        fetchProfile();
+    });
+});
+
+onUnmounted(() => {
+    echo.leave(`user.${authStore.user?.id}`);
 });
 </script>
 
@@ -51,7 +59,7 @@ onMounted(() => {
         v-if="loading"
         class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12"
     >
-        <div
+        <div v-for="i in 3" :key="i"
             class="rounded-2xl p-6 border border-slate-700/50 bg-slate-800/50 animate-pulse"
         >
             <div class="h-12 w-12 rounded-xl bg-slate-700 mb-4"></div>
