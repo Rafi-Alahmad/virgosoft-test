@@ -30,9 +30,22 @@ class OrderController extends Controller
 
     public function index(Request $request)
     {
+        $validated = $request->validate([
+            'status' => ['sometimes', 'nullable', 'in:1,2,3,null'],
+            'side' => ['sometimes', 'nullable', 'in:buy,sell,null'],
+            'symbol' => ['sometimes', 'nullable', 'string', 'max:10'],
+        ]);
+
+        $validated = array_filter($validated, function ($value) {
+            return $value !== null && $value !== 'null';
+        });
+
         return OrderResource::collection(
             $this->orders->listOrders(
-                $request->integer('per_page', 50)
+                $request->integer('per_page', 50),
+                $validated['status'] ?? null,
+                $validated['side'] ?? null,
+                $validated['symbol'] ?? null,
             )
         );
     }

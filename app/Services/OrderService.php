@@ -22,11 +22,21 @@ class OrderService
             ->paginate($perPage);
     }
 
-    public function listOrders(int $perPage = 50): LengthAwarePaginator
+    public function listOrders(int $perPage = 50, $status = null, $side = null, $symbol = null): LengthAwarePaginator
     {
-        return Order::query()
-            ->orderBy('created_at', 'desc')
-            ->paginate($perPage);
+        $query = Order::query()
+            ->orderBy('created_at', 'desc');
+        if ($status !== null) {
+            $query->forStatus($status);
+        }
+        if ($side !== null) {
+            $query->forSide($side);
+        }
+        if ($symbol !== null) {
+            $query->forSymbol($symbol);
+        }
+
+        return $query->paginate($perPage);
     }
 
     public function place(User $user, array $data): Order

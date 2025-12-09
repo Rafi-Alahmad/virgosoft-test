@@ -32,6 +32,24 @@ class Order extends Model
         ];
     }
 
+    public function scopeForStatus($query, ?int $status)
+    {
+        if ($status) {
+            $query->where('status', $status);
+        }
+
+        return $query;
+    }
+
+    public function scopeForSide($query, ?string $side)
+    {
+        if ($side) {
+            $query->where('side', $side);
+        }
+
+        return $query;
+    }
+
     public function scopeOpen($query)
     {
         return $query->where('status', self::STATUS_OPEN);

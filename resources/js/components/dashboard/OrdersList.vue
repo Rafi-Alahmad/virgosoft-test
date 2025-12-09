@@ -19,9 +19,30 @@ const sideLabels = {
     sell: { text: "Sell", color: "text-rose-400" },
 };
 
+const sides = [
+    { text: "Side", value: null },
+    { text: "Buy", value: "buy" },
+    { text: "Sell", value: "sell" },
+];
+
+const statuses = [
+    { text: "Status", value: null },
+    { text: "Open", value: 1 },
+    { text: "Filled", value: 2 },
+    { text: "Cancelled", value: 3 },
+];
+
+const symbols = [
+    { text: "Asset", value: null },
+    { text: "BTC", value: "BTC" },
+    { text: "ETH", value: "ETH" },
+];
+const status = ref(null);
+const side = ref(null);
+const symbol = ref(null);
 const fetchOrders = async () => {
     loading.value = true;
-    const { data, error } = await get("/orders?per_page=50");
+    const { data, error } = await get(`/orders?status=${status.value}&side=${side.value}&symbol=${symbol.value}&per_page=50`);
 
     if (data && !error) {
         orders.value = data.data || [];
@@ -30,11 +51,14 @@ const fetchOrders = async () => {
     loading.value = false;
 };
 
+watch([status, side, symbol], () => {
+    fetchOrders();
+});
+
 onMounted(async () => {
     fetchOrders();
 
-    echo.private(`user.${authStore.user.id}`)
-    .listen(".order-matched", (e) => {
+    echo.private(`user.${authStore.user.id}`).listen(".order-matched", (e) => {
         fetchOrders();
     });
 });
@@ -46,20 +70,48 @@ onUnmounted(() => {
 
 <template>
     <AppCard title="All Orders" class="h-[500px]">
-        <template #icon>
-            <svg
-                class="w-6 h-6 text-slate-400"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-            >
-                <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
-                    d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"
-                />
-            </svg>
+        <template #title>
+            <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 w-full">
+                <span class="text-nowrap"> All Orders </span>
+                <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:gap-3 w-full sm:w-auto">
+                    <select
+                        v-model="status"
+                        class="px-3 py-2 rounded-lg bg-slate-800 border border-slate-700 text-white text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 flex-1 sm:flex-none min-w-0"
+                    >
+                        <option
+                            v-for="status in statuses"
+                            :key="status.value"
+                            :value="status.value"
+                        >
+                            {{ status.text }}
+                        </option>
+                    </select>
+                    <select
+                        v-model="symbol"
+                        class="px-3 py-2 rounded-lg bg-slate-800 border border-slate-700 text-white text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 flex-1 sm:flex-none min-w-0"
+                    >
+                        <option
+                            v-for="symbol in symbols"
+                            :key="symbol.value"
+                            :value="symbol.value"
+                        >
+                            {{ symbol.text }}
+                        </option>
+                    </select>
+                    <select
+                        v-model="side"
+                        class="px-3 py-2 rounded-lg bg-slate-800 border border-slate-700 text-white text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 flex-1 sm:flex-none min-w-0"
+                    >
+                        <option
+                            v-for="side in sides"
+                            :key="side.value"
+                            :value="side.value"
+                        >
+                            {{ side.text }}
+                        </option>
+                    </select>
+                </div>
+            </div>
         </template>
 
         <div v-if="loading" class="space-y-3">
