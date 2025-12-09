@@ -14,7 +14,7 @@ const props = defineProps({
     },
 });
 
-const { get } = useApi();
+const { get, post } = useApi();
 const authStore = useAuthStore();
 const ordersData = ref([]);
 const loading = ref(true);
@@ -48,8 +48,7 @@ watch(
 onMounted(() => {
     fetchOrderbook();
 
-    echo.private(`user.${authStore.user?.id}`)
-    .listen(".order-matched", (e) => {
+    echo.private(`user.${authStore.user?.id}`).listen(".order-matched", (e) => {
         fetchOrderbook();
     });
 });
@@ -57,6 +56,16 @@ onMounted(() => {
 onUnmounted(() => {
     echo.leave(`user.${authStore.user?.id}`);
 });
+
+const cancelOrder = async (id) => {
+    const { data, error } = await post(`/orders/${id}/cancel`);
+    if (data && !error) {
+        useToast().success("Order cancelled successfully!");
+        fetchOrderbook();
+    } else {
+        useToast().error("Failed to cancel order");
+    }
+};
 </script>
 
 <template>
@@ -84,7 +93,7 @@ onUnmounted(() => {
                 </select>
             </div>
             <router-link
-                :to="{name: 'order-form'}"
+                :to="{ name: 'order-form' }"
                 class="ml-auto px-4 py-2 rounded-lg bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 hover:bg-emerald-500/20 transition-colors text-sm font-medium"
             >
                 New Order
@@ -128,23 +137,51 @@ onUnmounted(() => {
                         :key="`sell-${order.id}`"
                         class="flex items-center justify-between p-2 rounded hover:bg-slate-800/50 transition-colors"
                     >
-                        <span class="text-sm" :class="order.side === 'buy' ? 'text-emerald-400' : 'text-rose-400'">
+                        <span
+                            class="text-sm"
+                            :class="
+                                order.side === 'buy'
+                                    ? 'text-emerald-400'
+                                    : 'text-rose-400'
+                            "
+                        >
                             {{ formatAmount(order.amount) }} {{ order.symbol }}
                         </span>
-                        <span class="text-sm font-medium" :class="order.side === 'buy' ? 'text-emerald-400' : 'text-rose-400'">
+                        <span
+                            class="text-sm font-medium"
+                            :class="
+                                order.side === 'buy'
+                                    ? 'text-emerald-400'
+                                    : 'text-rose-400'
+                            "
+                        >
                             ${{ formatPrice(order.price) }}
                         </span>
 
-                        <div >
-                            <router-link :to="{
-                                name: 'order-form',
-                                query: {
-                                    symbol: order.symbol,
-                                    side: order.side == 'buy' ? 'sell' : 'buy',
-                                    price: order.price,
-                                    amount: order.amount,
-                                },
-                            }" class="px-2 py-1 rounded text-xs font-medium bg-emerald-500/10 text-emerald-400">
+                        <div>
+                            <button
+                                v-if="order.can_cancel"
+                                @click="cancelOrder(order.id)"
+                                class="px-2 py-1 rounded text-xs font-medium bg-red-500/10 text-red-400 hover:bg-red-500/20 transition-colors"
+                            >
+                                Cancel
+                            </button>
+                            <router-link
+                                v-else
+                                :to="{
+                                    name: 'order-form',
+                                    query: {
+                                        symbol: order.symbol,
+                                        side:
+                                            order.side == 'buy'
+                                                ? 'sell'
+                                                : 'buy',
+                                        price: order.price,
+                                        amount: order.amount,
+                                    },
+                                }"
+                                class="px-2 py-1 rounded text-xs font-medium bg-emerald-500/10 text-emerald-400"
+                            >
                                 Create Match
                             </router-link>
                         </div>

@@ -4,7 +4,7 @@ namespace App\Http\Resources;
 
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
-
+use App\Models\Order;
 class OrderResource extends JsonResource
 {
     /**
@@ -22,6 +22,7 @@ class OrderResource extends JsonResource
             'amount' => $this->amount,
             'status' => $this->status,
             'created_at' => $this->created_at?->format('Y-m-d H:i'),
+            'can_cancel' => $this->status === Order::STATUS_OPEN && $this->user_id === auth()->user()->id,
         ];
     }
 }

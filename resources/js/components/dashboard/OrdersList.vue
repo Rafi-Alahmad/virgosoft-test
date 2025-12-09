@@ -58,13 +58,13 @@ watch([status, side, symbol], () => {
 onMounted(async () => {
     fetchOrders();
 
-    echo.private(`user.${authStore.user.id}`).listen(".order-matched", (e) => {
+    echo.private(`user.${authStore.user?.id}`).listen(".order-matched", (e) => {
         fetchOrders();
     });
 });
 
 onUnmounted(() => {
-    echo.leave(`user.${authStore.user.id}`);
+    echo.leave(`user.${authStore.user?.id}`);
 });
 </script>
 
