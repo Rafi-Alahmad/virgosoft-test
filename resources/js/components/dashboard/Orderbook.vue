@@ -25,8 +25,10 @@ const orders = computed(() => {
     );
 });
 
-const fetchOrderbook = async () => {
-    loading.value = true;
+const fetchOrderbook = async (withLoading = true) => {
+    if (withLoading) {
+        loading.value = true;
+    }
     const { data, error } = await get(
         `/orders/open?symbol=${symbol.value}&per_page=100`
     );
@@ -35,7 +37,9 @@ const fetchOrderbook = async () => {
         ordersData.value = data.data || [];
     }
 
-    loading.value = false;
+    if (withLoading) {
+        loading.value = false;
+    }
 };
 
 watch(
@@ -49,7 +53,7 @@ onMounted(() => {
     fetchOrderbook();
 
     echo.private(`user.${authStore.user?.id}`).listen(".order-matched", (e) => {
-        fetchOrderbook();
+        fetchOrderbook(false);
     });
     echo.channel(`orders`).listen(".order-placed", (e) => {
         ordersData.value.push(e.order);

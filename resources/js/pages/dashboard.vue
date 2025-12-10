@@ -18,8 +18,10 @@ const assets = ref([]);
 const loading = ref(true);
 const selectedSymbol = ref("BTC");
 
-const fetchProfile = async () => {
-    loading.value = true;
+const fetchProfile = async (withLoading = true) => {
+    if (withLoading) {
+        loading.value = true;
+    }
     const { data, error } = await get("/profile");
 
     if (data.data && !error) {
@@ -35,14 +37,16 @@ const fetchProfile = async () => {
         }
     }
 
-    loading.value = false;
+    if (withLoading) {
+        loading.value = false;
+    }
 };
 
 onMounted(() => {
     fetchProfile();
 
     echo.private(`user.${authStore.user?.id}`).listen(".order-matched", (e) => {
-        fetchProfile();
+        fetchProfile(false);
     });
 });
 

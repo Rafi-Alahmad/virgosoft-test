@@ -40,15 +40,19 @@ const symbols = [
 const status = ref(null);
 const side = ref(null);
 const symbol = ref(null);
-const fetchOrders = async () => {
-    loading.value = true;
+const fetchOrders = async (withLoading = true) => {
+    if (withLoading) {
+        loading.value = true;
+    }
     const { data, error } = await get(`/orders?status=${status.value}&side=${side.value}&symbol=${symbol.value}&per_page=50`);
 
     if (data && !error) {
         ordersData.value = data.data || [];
     }
 
-    loading.value = false;
+    if (withLoading) {
+        loading.value = false;
+    }
 };
 
 const orders = computed(() => {
@@ -63,7 +67,7 @@ onMounted(async () => {
     fetchOrders();
 
     echo.private(`user.${authStore.user?.id}`).listen(".order-matched", (e) => {
-        fetchOrders();
+        fetchOrders(false);
     });
 
     echo.channel(`orders`).listen(".order-placed", (e) => {
