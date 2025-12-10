@@ -36,6 +36,17 @@ class User extends Authenticatable
         'remember_token',
     ];
 
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::created(function ($user) {
+            foreach (['BTC', 'ETH'] as $symbol) {
+                $user->assets()->create(['symbol' => $symbol, 'amount' => 0, 'locked_amount' => 0]);
+            }
+        });
+    }
+
     /**
      * Get the attributes that should be cast.
      *
