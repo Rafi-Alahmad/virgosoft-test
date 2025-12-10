@@ -22,7 +22,8 @@ const availableSymbols = ref(["BTC", "ETH"]);
 const totalCost = computed(() => {
     const price = parseFloat(form.price) || 0;
     const amount = parseFloat(form.amount) || 0;
-    return (price * amount).toFixed(2);
+    const fee = form.side === "sell" ? 0.015 : 0;
+    return ((price * amount) * (1 - fee)).toFixed(2);
 });
 
 const handleSubmit = async () => {
@@ -171,7 +172,7 @@ const handleSubmit = async () => {
         <!-- Total Cost -->
         <div class="p-4 rounded-lg bg-slate-800/50 border border-slate-700">
             <div class="flex items-center justify-between">
-                <span class="text-sm text-slate-400">Total Cost</span>
+                <span class="text-sm text-slate-400">Total</span>
                 <span class="text-lg font-semibold text-white">
                     ${{ totalCost }}
                 </span>
