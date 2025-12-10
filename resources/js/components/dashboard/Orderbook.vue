@@ -182,7 +182,7 @@ const cancelOrder = async (id) => {
                                 }"
                                 class="px-2 py-1 rounded text-xs font-medium bg-emerald-500/10 text-emerald-400"
                             >
-                                Create Match
+                                {{order.side == 'buy' ? "Sell" : "Buy"}}
                             </router-link>
                         </div>
                     </div>
