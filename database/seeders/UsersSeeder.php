@@ -24,6 +24,7 @@ class UsersSeeder extends Seeder
                 "email" => env('ADMIN_EMAIL', 'admin@admin.com'),
                 "email_verified_at" => Carbon::now(),
                 "password" => Hash::make(env('ADMIN_AUTH', '12345678')),
+                "balance" => 10000,
                 'assets' => [
                     [
                         'symbol' => 'BTC',
@@ -34,7 +35,24 @@ class UsersSeeder extends Seeder
                         'amount' => 10,
                     ],
                 ],
-            ]
+            ],
+            [
+                "name" => "user",
+                "email" => 'user@user.com',
+                "email_verified_at" => Carbon::now(),
+                "password" => Hash::make('12345678'),
+                "balance" => 20000,
+                'assets' => [
+                    [
+                        'symbol' => 'BTC',
+                        'amount' => 10,
+                    ],
+                    [
+                        'symbol' => 'ETH',
+                        'amount' => 20,
+                    ],
+                ],
+            ],
         ];
 
         foreach ($users as $user) {
@@ -42,6 +60,7 @@ class UsersSeeder extends Seeder
                 "name" => $user['name'],
                 "email_verified_at" => $user['email_verified_at'],
                 "password" => $user['password'],
+                "balance" => $user['balance'],
             ]);
 
             foreach ($user['assets'] as $asset) {
