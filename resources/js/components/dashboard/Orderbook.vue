@@ -21,7 +21,7 @@ const loading = ref(true);
 
 const orders = computed(() => {
     return ordersData.value.sort(
-        (a, b) => parseFloat(a.price) - parseFloat(b.price)
+        (a, b) => new Date(b.created_at) - new Date(a.created_at)
     );
 });
 
@@ -51,10 +51,14 @@ onMounted(() => {
     echo.private(`user.${authStore.user?.id}`).listen(".order-matched", (e) => {
         fetchOrderbook();
     });
+    echo.channel(`orders`).listen(".order-placed", (e) => {
+        ordersData.value.push(e.order);
+    });
 });
 
 onUnmounted(() => {
     echo.leave(`user.${authStore.user?.id}`);
+    echo.leave(`orders`);
 });
 
 const cancelOrder = async (id) => {

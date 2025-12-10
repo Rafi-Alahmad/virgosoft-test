@@ -5,7 +5,7 @@ import AppCard from "@/components/ui/AppCard.vue";
 
 const { get } = useApi();
 const authStore = useAuthStore();
-const orders = ref([]);
+const ordersData = ref([]);
 const loading = ref(true);
 
 const statusLabels = {
@@ -45,11 +45,15 @@ const fetchOrders = async () => {
     const { data, error } = await get(`/orders?status=${status.value}&side=${side.value}&symbol=${symbol.value}&per_page=50`);
 
     if (data && !error) {
-        orders.value = data.data || [];
+        ordersData.value = data.data || [];
     }
 
     loading.value = false;
 };
+
+const orders = computed(() => {
+    return ordersData.value.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+});
 
 watch([status, side, symbol], () => {
     fetchOrders();
@@ -61,10 +65,15 @@ onMounted(async () => {
     echo.private(`user.${authStore.user?.id}`).listen(".order-matched", (e) => {
         fetchOrders();
     });
+
+    echo.channel(`orders`).listen(".order-placed", (e) => {
+        ordersData.value.push(e.order);
+    });
 });
 
 onUnmounted(() => {
     echo.leave(`user.${authStore.user?.id}`);
+    echo.leave(`orders`);
 });
 </script>
 
