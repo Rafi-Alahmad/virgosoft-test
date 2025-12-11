@@ -38,3 +38,13 @@ PUSHER_APP_CLUSTER
 npm run dev
 php artisan serve
 ```
+
+6) Start using it
+- you can login with the following accounts 
+```
+Email 1: admin@admin.com
+Email 2: user@user.com
+
+Password: 12345678
+```
+
